@@ -2,7 +2,7 @@
 
 To get WP up and running you have to prepare several things. This guide is based on a Dokku installation on a DigitalOcean Dropplet; for me the most convenient way to get a Dokku platform running.
 
-####Prepare your dokku environment
+#### Prepare your dokku environment
 To make sure everything is on place, you should prepare your dokku environment.
 
 1. Add your app
@@ -32,11 +32,11 @@ Now connect your database to your app. This step makes sure your app has access 
 dokku mariadb:link my_wp_database yourappname
 
 
-#####Prepare the app configuration
+##### Prepare the app configuration
 
 Now we have to set some environment variables and docker options to make sure that WordPress is able to connect to the database, to crypt some cookies and to persist your data (uploads, themes, plugins). This is a very important step to make sure your data will be in place even after a restart of the container or the server.
 
-#####Set the config
+##### Set the config
 
 First start with the database configuration. You remember the DSN you got after you created the Database?
 
@@ -82,24 +82,24 @@ Do a  dokku config. This gives you a list of all environment variables set for y
     
 Everything in place? Then move on 
 
-####Configure the docker-options
+#### Configure the docker-options
 
 This Step is very important to preserve uploads and downloaded themes and plugins. If you miss these steps, your files will we gone after a restart of the container.
  Just create a directory on your dokku host. For my example, i created the directory /opt/wordpress/.
 
-#####Then link the directory to your container:
+##### Then link the directory to your container:
 
 `dokku docker-options:add yourappname deploy,run "-v /opt/wordpress:/app/wp-content"`
 
 Thats all, the environment is prepared now. Let’s configure and deploy WordPress 🙂
 
-####Prepare WordPress
+#### Prepare WordPress
 Just clone this repository on your local machine.
 
     git clone https://github.com/imana97/wordpress-dokku.git
 
  
-####Deploy your app
+#### Deploy your app
 
 Now we have to add your dokku server as a git remote (remember to change the dokku server and hostname)
 
