@@ -2,7 +2,7 @@
 
 To get WP up and running you have to prepare several things. This guide is based on a Dokku installation on a DigitalOcean Dropplet; for me the most convenient way to get a Dokku platform running.
 
-Prepare your dokku environment
+####Prepare your dokku environment
 To make sure everything is on place, you should prepare your dokku environment.
 
 1. Add your app
@@ -61,7 +61,7 @@ Next are the salt values for several security features of WordPress
     dokku config:set yourappname SECURE_AUTH_KEY=whatyouwant
     dokku config:set yourappname SECURE_AUTH_SALT=whatyouwant
     
-Do a  dokku config . This gives you a list of all environment variables set for your app
+Do a  dokku config. This gives you a list of all environment variables set for your app
 
 
     dokku@myserver:~# dokku config yourappname
@@ -94,144 +94,9 @@ This Step is very important to preserve uploads and downloaded themes and plugin
 Thats all, the environment is prepared now. Let’s configure and deploy WordPress 🙂
 
 ####Prepare WordPress
-Just clone the current WordPress repository from Github and add a deployment branch:
+Just clone this repository on your local machine.
 
-
-    git clone https://github.com/WordPress/WordPress wordpress
-    cd wordpress
-    git checkout -b deployment
-
- 
-
-First add a file called composer.json to your repository. This will make sure that the correct version of php will be used and also install some basic libraries like gd and curl.
-
-
-    {
-      "require": {
-        "php": "~5.6.0",
-        "ext-mbstring" : "*",
-        "ext-gd": "*",
-        "ext-curl": "0.0.0.*",
-        "ext-exif": "0.0.0.*"
-      },
-      "scripts": {
-        "post-install-cmd": [
-          "chmod -R 777 wp-content"
-        ]
-      }
-    }
-
- 
-
-Next add a file called nginx_app.conf. This configures the nginx service for your subdomain/app.
-
-
-
-    # WordPress permalinks
-    location / {
-      index index.php index.html;
-      try_files $uri $uri/ /index.php?$args;
-    }
-     
-    # Add trailing slash to */wp-admin requests.
-    rewrite /wp-admin$ $scheme://$host$uri/ permanent;
-     
-    # Deny access to any files with a .php extension in the uploads directory
-    # Works in sub-directory installs and also in multisite network
-    location ~* /(?:uploads|files)/.*.php$ {
-      deny all;
-    }
-     
-    #upload
-    client_max_body_size 100M;
-     
-    #jetpack connection
-    fastcgi_buffers 8 32k;
-    fastcgi_buffer_size 64k;
-    proxy_buffer_size 128k;
-    proxy_buffers 4 256k;
-    proxy_busy_buffers_size 256k;
-     
-    # enable gzip compression
-    gzip on;
-    # Minimum file size in bytes (really small files aren’t worth compressing)
-    gzip_min_length 1000;
-    # Compression level, 1-9
-    gzip_comp_level 2;
-    gzip_buffers 4 32k;
-    gzip_types text/plain application/javascript text/xml text/css image/svg+xml;
-    # Insert `Vary: Accept-Encoding` header, as specified in HTTP1.1 protocol
-    gzip_vary on;
-    # end gzip configuration
-     
-    # Set time to expire for headers on assets
-    location ~* .(js|css|png|jpg|jpeg|gif|ico|svg)$ {
-      expires 1y;
-    }
-     
-    # Sitemap url, for WordPress SEO plugin
-    #rewrite ^/sitemap_index.xml$ /index.php?sitemap=1 last;
-    #rewrite ^/([^/]+?)-sitemap([0-9]+)?.xml$ /index.php?sitemap=$1&sitemap_n=$2 last;
-     
-
-I also added a file called custom_php.ini where you can set several php options for your deployment.
-
-    upload_max_filesize = 50M
-    post_max_size = 50M
-
-Now add a file named `Procfile`. This will ensure dokku is loading your configuration.
-
-
-`web: vendor/bin/heroku-php-nginx -C nginx_app.conf -i custom_php.ini --verbose`
-
-Finally, copy the file wp-config.php.sample to wp-config.php and modify some variables:
-
-
-
-    $_SERVER['SERVER_PORT'] = "80";
-     
-    // ** MySQL settings - You can get this info from your web host ** //
-    /** The name of the database for WordPress */
-    define('DB_NAME', getenv('DB_NAME'));
-     
-    /** MySQL database username */
-    define('DB_USER', getenv('DB_USER'));
-     
-    /** MySQL database password */
-    define('DB_PASSWORD', getenv('DB_PASSWORD'));
-     
-    /** MySQL hostname */
-    define('DB_HOST', getenv('DB_HOST'));
-     
-    /** Database Charset to use in creating database tables. */
-    define('DB_CHARSET', 'utf8');
-     
-    /** The Database Collate type. Don't change this if in doubt. */
-    define('DB_COLLATE', '');
-     
-    /**#@+
-     * Authentication Unique Keys and Salts.
-     *
-     * Change these to different unique phrases!
-     * You can generate these using the {@link https://api.wordpress.org/secret-key/1.1/salt/ WordPress.org secret-key service}
-     * You can change these at any point in time to invalidate all existing cookies. This will force all users to have to log in again.
-     *
-     * @since 2.6.0
-     */
-    define('AUTH_KEY',         getenv('AUTH_KEY'));
-    define('SECURE_AUTH_KEY',  getenv('SECURE_AUTH_KEY'));
-    define('LOGGED_IN_KEY',    getenv('LOGGED_IN_KEY'));
-    define('NONCE_KEY',        getenv('NONCE_KEY'));
-    define('AUTH_SALT',        getenv('AUTH_SALT'));
-    define('SECURE_AUTH_SALT', getenv('SECURE_AUTH_SALT'));
-    define('LOGGED_IN_SALT',   getenv('LOGGED_IN_SALT'));
-    define('NONCE_SALT',       getenv('NONCE_SALT'));
-    
-If everything is done, commit the files and changes to our branch
-
-
-    git add -A
-    git commit -m "Dokku stuff"
+    git clone https://github.com/imana97/wordpress-dokku.git
 
  
 ####Deploy your app
@@ -242,4 +107,4 @@ git remote add dokku dokku@myserver.com:myhostname
 
 And now, DEPLOY
 
-    git push dokku deployment:master
+    git push dokku master
