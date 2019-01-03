@@ -89,7 +89,7 @@ This Step is very important to preserve uploads and downloaded themes and plugin
 
 ##### Then link the directory to your container:
 
-`dokku docker-options:add yourappname deploy,run "-v /opt/wordpress:/app/wp-content"`
+    dokku docker-options:add yourappname deploy,run "-v /opt/wordpress:/app/wp-content"
 
 Thats all, the environment is prepared now. Let’s configure and deploy WordPress 🙂
 
@@ -103,7 +103,7 @@ Just clone this repository on your local machine.
 
 Now we have to add your dokku server as a git remote (remember to change the dokku server and hostname)
 
-git remote add dokku dokku@myserver.com:myhostname
+    git remote add dokku dokku@myserver.com:myhostname
 
 And now, DEPLOY
 
